@@ -23,18 +23,6 @@
 
 require_once("" . $_SERVER["DOCUMENT_ROOT"] . "/source/functions.php");
 
-$replaces = array(	"1" => " one ",
-					"2" => " two ",
-					"3" => " three ",
-					"4" => " four ",
-					"5" => " five ",
-					"6" => " six ",
-					"7" => " seven ",
-					"8" => " eight ",
-					"9" => " nine ",
-					"0" => " zero ",
-					" - " => " dash ");
-
 $va_text = array();
 
 /*
@@ -54,14 +42,10 @@ if (isset($_GET["sys"]))
 	{
 		$va_system = str_replace(".", "", $current_system);
 
-		foreach ($replaces AS $find => $replace)
-		{
-			$va_system = str_replace($find, $replace, $va_system);
-		}
-		$va_text = "The " . $va_system . " system.\n\r";
+		$va_text = "The " . tts_override($va_system) . " system.\n\r";
 
 		$va_allegiance = $current_allegiance == "None" ? "No additional data available. " : $current_allegiance;
-		$va_allegiance = $va_allegiance == "" ? "No additional data available. " : $va_allegiance;
+		$va_allegiance = $va_allegiance == "" ? "No additional data available. " : $va_allegiance . " aligned";
 
 		$rant = "";
 		$rants = array();
@@ -82,8 +66,13 @@ if (isset($_GET["sys"]))
 			$rant = $rants[0];
 		}
 
-		$va_government = $current_government == "None" ? "" : " " . $current_government . "";
 
+		if ($current_government == "") {
+			$va_government = "No government. ";
+		} else {
+			$va_government = " " . $current_government . " government. ";
+		}
+		
 		if ($current_power != "" && $current_power_state != "")
 		{
 			$va_power_text = array();
@@ -111,16 +100,28 @@ if (isset($_GET["sys"]))
 					$va_power_text[] = "Arissa Lavigny-Duval. It's small but cute";
 				}
 			}
-
-			if ($current_power_state == "Contested")
-			{
-				$va_power = " system that is currently contested";
+			
+			shuffle($va_power_text);
+			
+			switch (strtolower($current_power_state)) {
+					case "control":
+						$va_power_state = "It is a powerplay control system for $va_power_text[0]";
+						break;
+					case "exploited":
+						$va_power_state = "It is exploited by $va_power_text[0]";
+						break;
+					case "contested":
+						$va_power_state = "It is contested by several galactic powers";
+						break;
+					case "expansion":
+						$va_power_state = "It has been nominated for expansion by $va_power_text[0]";
+						break;
+					default:
+						$va_power_state = "It is not claimed by any galactic power";
+						break;
 			}
-			else
-			{
-				shuffle($va_power_text);
-				$va_power = $current_power_state == "None" ? "" : " " . strtolower($current_power_state) . " by " . $va_power_text[0] . "";
-			}
+			
+			$va_power = $current_power_state == "None" ? "" : $va_power_state . ". ";
 		}
 		else
 		{
@@ -146,11 +147,11 @@ if (isset($_GET["sys"]))
 
 		if ($current_population == 0)
 		{
-			$va_pop = "";
+			$va_pop = " It is unpopulated. ";
 		}
 		else
 		{
-			$va_pop = $current_population == "None" ? ". It is unpopulated." : ", with a population of about " . number_format(round($current_population, $round)) . ".";
+			$va_pop = $current_population == "None" ? "It is unpopulated." : "There is a population of about " . number_format(round($current_population, $round)) . ".";
 		}
 
 		$article = "";
@@ -199,14 +200,14 @@ if (isset($_GET["sys"]))
 		if ($count == 1)
 		{
 			if ($first_station_ls_from_star != 0)
-				$va_text .= " The systems' only spaceport is " . $first_station_name . " " . number_format(round($first_station_ls_from_star)) . " light seconds away.";
+				$va_text .= " The systems' only spaceport is " . $first_station_name . " " . number_format(round($first_station_ls_from_star)) . " light seconds from point of entry.";
 			else
 				$va_text .= " The systems' only spaceport is " . $first_station_name . ".";
 		}
 		else if ($count > 1)
 		{
 			if ($first_station_ls_from_star != 0)
-				$va_text .= " It has " . $count . " spaceports, the nearest one is " . $first_station_name . " " . number_format(round($first_station_ls_from_star)) . " light seconds away.";
+				$va_text .= " It has " . $count . " spaceports, the nearest one is " . $first_station_name . " " . number_format(round($first_station_ls_from_star)) . " light seconds from point of entry.";
 			else
 				$va_text .= " It has " . $count . " spaceports.";
 		}
@@ -308,12 +309,7 @@ if (isset($_GET["cs"]))
 
 	$cs_arr = mysqli_fetch_assoc($cs_res);
 
-	$cs_system = $cs_arr["system_name"];
-
-	foreach ($replaces AS $find => $replace)
-	{
-		$cs_system = str_replace($find, $replace, $cs_system);
-	}
+	$cs_system = tts_override($cs_arr["system_name"]);
 
 	$cs_allegiance = $cs_arr["allegiance"];
 
@@ -442,5 +438,32 @@ if (isset($_GET["rm"]))
 												or write_log(mysqli_error($GLOBALS["___mysqli_ston"]), __FILE__, __LINE__);
 
 	((is_null($___mysqli_res = mysqli_close($link))) ? false : $___mysqli_res);
+	exit();
+}
+
+/*
+*	Voice Attack Short System Name
+*/
+
+if (isset($_GET["sys_short"]))
+{
+	$num_visits = mysqli_num_rows(mysqli_query($GLOBALS["___mysqli_ston"], "	SELECT id
+																				FROM user_visited_systems
+																				WHERE system_name = '" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $current_system) . "'"))
+																				or write_log(mysqli_error($GLOBALS["___mysqli_ston"]), __FILE__, __LINE__);
+
+	$va_text .= "unknown system. There was an unknown error accessing GalNet.";
+
+	if ($current_system != "")
+	{
+		$va_system = str_replace(".", "", $current_system);
+
+		$va_text = tts_override($va_system) . " \n\r";
+	}
+
+	echo $va_text;
+
+	((is_null($___mysqli_res = mysqli_close($link))) ? false : $___mysqli_res);
+
 	exit();
 }
