@@ -57,6 +57,7 @@ $data = array();
 */
 
 $data['now_playing'] = "";
+
 if (isset($settings["nowplaying_file"]) && $settings["nowplaying_file"] != "")
 {
 	$nowplaying = file_get_contents($settings["nowplaying_file"]);
@@ -64,6 +65,33 @@ if (isset($settings["nowplaying_file"]) && $settings["nowplaying_file"] != "")
 	$data['now_playing'] = '<img src="/style/img/music.png" style="vertical-align:middle;margin-right:6px;" alt="Now playing" />';
 	$data['now_playing'] .= $nowplaying;
 }
+
+if (isset($settings["nowplaying_vlc_password"]) && $settings["nowplaying_vlc_password"] != "")
+{
+
+	$vlc_pass = $settings["nowplaying_vlc_password"];
+	$vlc_url = $settings["nowplaying_vlc_url"];
+
+	$vlc_opts = array(
+		'http'=>array(
+			'method'=>"GET",
+			'header' => "Authorization: Basic " . base64_encode(":$vlc_pass")
+		)
+	);
+	
+	$vlc_context = stream_context_create($vlc_opts);
+	$vlc_result = file_get_contents($vlc_url, false, $vlc_context);
+	
+	$vlc_json_data = json_decode($vlc_result, true);
+	
+	// There is some more work that could go into this to incorporate other metadata fields,
+	// but this is a good start.
+	$nowplaying .= $vlc_json_data["information"]["category"]["meta"]["now_playing"];
+
+	$data['now_playing'] = '<img src="/style/img/music.png" style="vertical-align:middle;margin-right:6px;" alt="Now playing" />';
+	$data['now_playing'] .= $nowplaying;
+}
+
 
 /*
 * 	I we've arrived in a new system or
