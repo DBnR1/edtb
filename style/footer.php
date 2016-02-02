@@ -85,9 +85,9 @@
 									<input class="textbox" type="text" name="from_system_name" placeholder="From system" id="system_2" style="width:97%" oninput="showResult(this.value, '2')" />
 								</td>
 								<td class="dark">
-									<input class="textbox" type="text" name="from_coor[]" placeholder="From x.x" id="coordsx_2" />
-									<input class="textbox" type="text" name="from_coor[]" placeholder="From y.y" id="coordsy_2" />
-									<input class="textbox" type="text" name="from_coor[]" placeholder="From z.z" id="coordsz_2" />
+									<input class="textbox" type="number" name="from_coor[]" placeholder="From x.x" id="coordsx_2" />
+									<input class="textbox" type="number" name="from_coor[]" placeholder="From y.y" id="coordsy_2" />
+									<input class="textbox" type="number" name="from_coor[]" placeholder="From z.z" id="coordsz_2" />
 								</td>
 							</tr>
 							<tr>
@@ -95,9 +95,9 @@
 									<input class="textbox" type="text" name="to_system_name" placeholder="To system" id="system_6" style="width:97%" oninput="showResult(this.value, '6')" />
 								</td>
 								<td class="dark">
-									<input class="textbox" type="text" name="to_coor[]" placeholder="To x.x" id="coordsx_6" />
-									<input class="textbox" type="text" name="to_coor[]" placeholder="To y.y" id="coordsy_6" />
-									<input class="textbox" type="text" name="to_coor[]" placeholder="To z.z" id="coordsz_6" />
+									<input class="textbox" type="number" name="to_coor[]" placeholder="To x.x" id="coordsx_6" />
+									<input class="textbox" type="number" name="to_coor[]" placeholder="To y.y" id="coordsy_6" />
+									<input class="textbox" type="number" name="to_coor[]" placeholder="To z.z" id="coordsz_6" />
 								</td>
 							</tr>
 							<tr>
