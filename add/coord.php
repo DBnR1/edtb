@@ -234,7 +234,7 @@ else
 					echo '<tr><td class="dark" style="text-align:right"><input class="textbox" type="hidden" id="' . $i . '" name="reference_' . $i . '" value="' . $ref_rname . '" />
 					<input class="textbox" type="hidden" name="reference_' . $i . '_coordinates" value="' . $ref_coordinates . '" /><a href="javascript:void(0)" title="Copy to clipboard"><img class="btn" src="/style/img/clipboard.png" alt="Copy" data-clipboard-text="' . $ref_rname . '" /></a>
 					<strong>' . $ref_rname . '</strong></td><td class="dark">
-					<input class="textbox" type="number" id="ref_' . $i . '_dist" name="reference_' . $i . '_distance" value="' . $ref[$i]["distance"] . '" placeholder="1234.56" style="width:100px" /><br /><span class="settings_info" style="font-size:11px">No commas or spaces</span></td></tr>';
+					<input class="textbox" type="number" autocomplete="off" id="ref_' . $i . '_dist" name="reference_' . $i . '_distance" value="' . $ref[$i]["distance"] . '" placeholder="1234.56" style="width:100px" /><br /><span class="settings_info" style="font-size:11px">No commas or spaces</span></td></tr>';
 					$i++;
 				}
 				?>
