@@ -517,3 +517,18 @@ if (isset($_GET["curSys"]) || isset($_GET["cSys"])) {
 
     exit;
 }
+
+if (isset($_GET["sys_short"]))
+{
+
+	$va_text .= "unknown";
+
+	if (!empty($curSys["name"]))
+	{
+		$va_text = $curSys["name"];
+	}
+
+	echo tts_override($va_text);
+
+	exit;
+}
